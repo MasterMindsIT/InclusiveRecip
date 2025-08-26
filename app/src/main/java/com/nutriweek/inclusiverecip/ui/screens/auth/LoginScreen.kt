@@ -1,4 +1,5 @@
 package com.nutriweek.inclusiverecip.ui.screens.auth
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -14,16 +15,16 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nutriweek.inclusiverecip.core.a11y.LargeButton
 import androidx.compose.ui.text.input.ImeAction
-
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-
-
+import com.nutriweek.inclusiverecip.core.a11y.AccessibleTextField
+import com.nutriweek.inclusiverecip.core.a11y.rememberSpeechToTextLauncher
+import com.nutriweek.inclusiverecip.core.a11y.rememberTtsSpeaker
 
 @Composable
 fun LoginScreen(
@@ -37,10 +38,13 @@ fun LoginScreen(
     val kb = LocalSoftwareKeyboardController.current
 
 
+    val tts = rememberTtsSpeaker()
+    val startDictateEmail = rememberSpeechToTextLauncher { vm.onEmailChange(it) }
+    val startDictatePass  = rememberSpeechToTextLauncher { vm.onPasswordChange(it) }
+
     fun submit() {
         kb?.hide(); focus.clearFocus(); vm.onLogin(onSuccess)
     }
-
 
     Column(
         modifier = Modifier
@@ -54,31 +58,34 @@ fun LoginScreen(
         Text("Acceso a Recetas", style = MaterialTheme.typography.headlineLarge)
         Spacer(Modifier.height(24.dp))
 
-
-        OutlinedTextField(
+        AccessibleTextField(
+            label = "Correo electrónico",
             value = state.email,
             onValueChange = vm::onEmailChange,
-            label = { Text("Correo electrónico") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .semantics { contentDescription = "Campo de correo" },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-        )
-        Spacer(Modifier.height(16.dp))
-        OutlinedTextField(
-            value = state.password,
-            onValueChange = vm::onPasswordChange,
-            label = { Text("Contraseña") },
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .semantics { contentDescription = "Campo de contraseña" },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { submit() })
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next,
+            tts = tts,
+            onDictateRequest = startDictateEmail,
+            supportingText = null,
+            isError = state.error?.contains("correo", ignoreCase = true) == true,
+            modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(Modifier.height(16.dp))
+
+        AccessibleTextField(
+            label = "Contraseña",
+            value = state.password,
+            onValueChange = vm::onPasswordChange,
+            isPassword = true,
+            imeAction = ImeAction.Done,
+            onDone = { submit() },
+            tts = tts,
+            onDictateRequest = startDictatePass,
+            supportingText = null,
+            isError = state.error?.contains("contraseña", ignoreCase = true) == true,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         if (state.error != null) {
             Spacer(Modifier.height(12.dp))
@@ -90,11 +97,38 @@ fun LoginScreen(
             )
         }
 
-
         Spacer(Modifier.height(24.dp))
+
+        // Ingresar
         LargeButton(
             text = if (state.isLoading) "Ingresando…" else "Ingresar",
             onClick = { submit() },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !state.isLoading)
-    }}
+            enabled = !state.isLoading
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        // Crear cuenta
+        LargeButton(
+            text = "Crear cuenta",
+            onClick = onGoRegister, // ✅ ahora se usa el callback
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { contentDescription = "Botón crear cuenta" },
+            enabled = !state.isLoading
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        // Recuperar cuenta
+        LargeButton(
+            text = "Recuperar cuenta",
+            onClick = onGoRecover, // ✅ ahora se usa el callback
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { contentDescription = "Botón recuperar cuenta" },
+            enabled = !state.isLoading
+        )
+    }
+}

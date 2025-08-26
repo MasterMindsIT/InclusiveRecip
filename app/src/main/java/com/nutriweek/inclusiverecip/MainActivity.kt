@@ -1,18 +1,18 @@
+// MainActivity.kt
 package com.nutriweek.inclusiverecip
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.LaunchedEffect
 import com.nutriweek.inclusiverecip.core.theme.AccessRecetasTheme
-import com.nutriweek.inclusiverecip.ui.Routes
-import com.nutriweek.inclusiverecip.ui.screens.auth.LoginScreen
-import com.nutriweek.inclusiverecip.ui.screens.recipes.PlanScreen
 
+// (Opcional) si usas el seed rápido:
+import com.nutriweek.inclusiverecip.data.InMemoryStore
+import com.nutriweek.inclusiverecip.data.model.*
+import com.nutriweek.inclusiverecip.ui.AppNav
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,25 +21,49 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun App() {
     AccessRecetasTheme {
+        // Seed opcional: crea una receta y un plan si no existen
+        LaunchedEffect(Unit) {
+            if (InMemoryStore.recipes.isEmpty()) {
+                val r1 = Recipe(
+                    id = "r-ensalada",
+                    title = "Ensalada Simple",
+                    shortDescription = "Lechuga, tomate y aceite de oliva.",
+                    ingredients = listOf(
+                        Ingredient("Lechuga", "1 unidad"),
+                        Ingredient("Tomate", "2 unidades"),
+                        Ingredient("Aceite de oliva", "1 cda")
+                    ),
+                    steps = listOf(
+                        RecipeStep(1, "Lava y corta la lechuga."),
+                        RecipeStep(2, "Corta el tomate en cubos."),
+                        RecipeStep(3, "Mezcla y añade aceite de oliva.")
+                    ),
+                    totalTimeMinutes = 10,
+                    servings = 2,
+                    tags = listOf("rápida", "ligera")
+                )
+                InMemoryStore.recipes[r1.id] = r1
+
+                InMemoryStore.plans["plan-semanal"] = MealPlan(
+                    id = "plan-semanal",
+                    name = "Plan semanal base",
+                    days = listOf(
+                        DayOfWeekPlan(WeekDay.MON, recipes = listOf("r-ensalada")),
+                        DayOfWeekPlan(WeekDay.TUE, recipes = listOf("r-ensalada")),
+                        DayOfWeekPlan(WeekDay.WED, recipes = listOf("r-ensalada")),
+                        DayOfWeekPlan(WeekDay.THU, recipes = listOf("r-ensalada")),
+                        DayOfWeekPlan(WeekDay.FRI, recipes = listOf("r-ensalada")),
+                        DayOfWeekPlan(WeekDay.SAT, recipes = listOf("r-ensalada")),
+                        DayOfWeekPlan(WeekDay.SUN, recipes = listOf("r-ensalada"))
+                    )
+                )
+            }
+        }
+
         Surface { AppNav() }
     }
 }
 
-
-@Composable
-fun AppNav(nav: NavHostController = rememberNavController()) {
-    NavHost(navController = nav, startDestination = Routes.Login) {
-        composable(Routes.Login) {
-            LoginScreen(
-                onGoRegister = { /* nav.navigate(Routes.Register) (próximo paso) */ },
-                onGoRecover = { /* nav.navigate(Routes.Recover) (próximo paso) */ },
-                onSuccess = { nav.navigate(Routes.Plan) { popUpTo(Routes.Login) { inclusive = true } } }
-            )
-        }
-        composable(Routes.Plan) { PlanScreen() }
-    }
-}

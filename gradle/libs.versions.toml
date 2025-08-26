@@ -11,6 +11,7 @@ composeBom = "2025.08.00"
 foundation = "1.9.0"
 navigationRuntimeKtx = "2.9.3"
 navigationCompose = "2.9.3"
+foundationVersion = "1.9.0"
 
 [libraries]
 # Core / Activity / Lifecycle
@@ -21,7 +22,11 @@ androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lif
 
 # Compose BOM
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-text = { module = "androidx.compose.ui:ui-text" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-icons = { module = "androidx.compose.material:material-icons-extended" }
 # Compose UI (sin versión porque la define el BOM)
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-text = { group = "androidx.compose.ui", name = "ui-text" }
@@ -43,6 +48,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

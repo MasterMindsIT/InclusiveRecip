@@ -58,12 +58,16 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2025.08.00"))
 
     // Compose UI
-//    **implementation(libs.androidx.ui)
-  //  implementation(libs.androidx.ui.text)
-    implementation("androidx.compose.ui:ui")        // UI core
-    implementation("androidx.compose.ui:ui-text") // <- para KeyboardOptions/Actions/ImeAction
+
+   // implementation("androidx.compose.ui:ui")        // UI core
+   // implementation("androidx.compose.ui:ui-text") // <- para KeyboardOptions/Actions/ImeAction
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.text)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.icons)
 
     // Material 3 + Foundation
     implementation(libs.androidx.material3)
@@ -76,6 +80,7 @@ dependencies {
     // Lifecycle compose (collectAsStateWithLifecycle)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.ui.text)
+    implementation(libs.foundation)
 
 
     // Test

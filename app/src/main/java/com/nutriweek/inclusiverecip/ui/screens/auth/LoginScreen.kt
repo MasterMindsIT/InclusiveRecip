@@ -25,6 +25,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.nutriweek.inclusiverecip.core.a11y.AccessibleTextField
 import com.nutriweek.inclusiverecip.core.a11y.rememberSpeechToTextLauncher
 import com.nutriweek.inclusiverecip.core.a11y.rememberTtsSpeaker
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import com.nutriweek.inclusiverecip.R
+import com.nutriweek.inclusiverecip.ui.components.ScreenScaffold
 
 @Composable
 fun LoginScreen(
@@ -46,15 +51,24 @@ fun LoginScreen(
         kb?.hide(); focus.clearFocus(); vm.onLogin(onSuccess)
     }
 
-    Column(
+    ScreenScaffold(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
-            .verticalScroll(rememberScrollState())
             .semantics { this[SemanticsProperties.TestTag] = "login_screen" },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    ) {
+    )
+
+    {
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Logo de la app",
+            modifier = Modifier
+                .size(120.dp)
+                .padding(bottom = 16.dp),
+            contentScale = ContentScale.Fit
+        )
         Text("Acceso a Recetas", style = MaterialTheme.typography.headlineLarge)
         Spacer(Modifier.height(24.dp))
 

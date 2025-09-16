@@ -50,18 +50,62 @@ fun App(scrollState: ScrollState) {
                     servings = 2,
                     tags = listOf("rápida", "ligera")
                 )
+                val r2 = Recipe(
+                    id = "s-ensalada",
+                    title = "Ensalada Simple nueva",
+                    shortDescription = "Lechuga, tomate, aceite de oliva y sal.",
+                    ingredients = listOf(
+                        Ingredient("Lechuga", "1 unidad"),
+                        Ingredient("Tomate", "2 unidades"),
+                        Ingredient("Aceite de oliva", "1 cda"),
+                        Ingredient("Sal Marina", "A gusto")
+                    ),
+                    steps = listOf(
+                        RecipeStep(1, "Lava y corta la lechuga."),
+                        RecipeStep(2, "Corta el tomate en cubos."),
+                        RecipeStep(3, "Mezcla y añade aceite de oliva."),
+                        RecipeStep(4, "Mezcla y añade aceite de oliva.")
+
+                    ),
+                    totalTimeMinutes = 10,
+                    servings = 2,
+                    tags = listOf("rápida", "ligera")
+                )
+                val r3 = Recipe(
+                    id = "t-ensalada",
+                    title = "Asado Chileno",
+                    shortDescription = "Diferentes cortes de carne y sal.",
+                    ingredients = listOf(
+                        Ingredient("Carne de lomo", "1 kilo"),
+                        Ingredient("Carne de azotillo", "2 kilo"),
+                        Ingredient("Longaniza ahumada", "1 tira"),
+                        Ingredient("Sal Marina", "A gusto")
+                    ),
+                    steps = listOf(
+                        RecipeStep(1, "Prepara las brasas."),
+                        RecipeStep(2, "Pon las carnes."),
+                        RecipeStep(3, "Agrega las longanizas."),
+                        RecipeStep(4, "Sal al gusto.")
+
+                    ),
+                    totalTimeMinutes = 50,
+                    servings = 5,
+                    tags = listOf("Normal", "Contundente")
+                )
                 InMemoryStore.recipes[r1.id] = r1
+                InMemoryStore.recipes[r2.id] = r2
+                InMemoryStore.recipes[r3.id] = r3
 
                 InMemoryStore.plans["plan-semanal"] = MealPlan(
                     id = "plan-semanal",
                     name = "Plan semanal base",
                     days = listOf(
                         DayOfWeekPlan(WeekDay.MON, recipes = listOf("r-ensalada")),
-                        DayOfWeekPlan(WeekDay.TUE, recipes = listOf("r-ensalada")),
-                        DayOfWeekPlan(WeekDay.WED, recipes = listOf("r-ensalada")),
+                        DayOfWeekPlan(WeekDay.TUE, recipes = listOf("s-ensalada")),
+                        DayOfWeekPlan(WeekDay.WED, recipes = listOf("t-ensalada")),
                         DayOfWeekPlan(WeekDay.THU, recipes = listOf("r-ensalada")),
-                        DayOfWeekPlan(WeekDay.FRI, recipes = listOf("r-ensalada")),
-                        DayOfWeekPlan(WeekDay.SAT, recipes = listOf("r-ensalada")),
+                        DayOfWeekPlan(WeekDay.FRI, recipes = listOf("s-ensalada")),
+                        DayOfWeekPlan(WeekDay.SAT, recipes = listOf("t-ensalada")),
                         DayOfWeekPlan(WeekDay.SUN, recipes = listOf("r-ensalada"))
                     )
                 )

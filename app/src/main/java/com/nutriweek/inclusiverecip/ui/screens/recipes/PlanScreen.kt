@@ -21,7 +21,7 @@ import com.nutriweek.inclusiverecip.domain.MealPlanner
 @Composable
 fun PlanScreen(
     onRecipeClick: (String) -> Unit = {},
-    onOpenAllRecipes: () -> Unit = {}   // 👈 parámetro nuevo
+    onOpenAllRecipes: () -> Unit = {}
 ) {
     val plan = MealPlanner.getActivePlan()
     val recipesMap = InMemoryStore.recipes
@@ -39,7 +39,7 @@ fun PlanScreen(
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.semantics {
                 heading()
-                contentDescription = "Título: Plan semanal"
+                contentDescription = "Título: Plan Personalizado"
             }
         )
 
@@ -48,7 +48,7 @@ fun PlanScreen(
         // Botón para ir a la lista completa de recetas
         LargeButton(
             text = "Ver todas las recetas",
-            onClick = onOpenAllRecipes,
+            onClick = onOpenAllRecipes,  //Se llaman a ver todas las recetas
             modifier = Modifier
                 .fillMaxWidth()
                 .semantics { contentDescription = "Abrir lista de todas las recetas" }
@@ -93,12 +93,13 @@ fun PlanScreen(
                     }
                 )
             } else {
+                //uso de lambda y api collection
                 recipeIds.forEachIndexed { idx, recipeId ->
                     val recipe = recipesMap[recipeId]
                     val title = recipe?.title ?: "Receta $recipeId"
                     LargeButton(
                         text = "${idx + 1}. $title",
-                        onClick = { onRecipeClick(recipeId) },
+                        onClick = { onRecipeClick(recipeId) }, //Paso de parametros a otra vista
                         modifier = Modifier
                             .fillMaxWidth()
                             .semantics { contentDescription = "Abrir receta: $title" }

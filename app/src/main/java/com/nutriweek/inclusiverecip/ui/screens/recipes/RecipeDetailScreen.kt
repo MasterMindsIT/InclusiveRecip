@@ -24,10 +24,10 @@ import java.util.Locale
 
 @Composable
 fun RecipeDetailScreen(
-    recipeId: String,
+    recipeId: String, //Parametro recibido
     onBack: () -> Unit = {}
 ) {
-    val recipe = InMemoryStore.recipes[recipeId]
+    val recipe = InMemoryStore.recipes[recipeId] //se traen los datos a partir del parametro
 
     if (recipe == null) {
         Column(

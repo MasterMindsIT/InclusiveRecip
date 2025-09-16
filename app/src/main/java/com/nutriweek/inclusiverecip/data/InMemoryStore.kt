@@ -6,7 +6,8 @@ import com.nutriweek.inclusiverecip.data.model.User
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Repositorio en memoria. Simula DB y sesión activa.
+ * Repositorio en memoria. Simula DB y sesión activa, Object es para que sea Singleton
+ * de esa forma persisten los datos y no se crea una nueva instancia.
  */
 object InMemoryStore {
     // Simples mapas en memoria

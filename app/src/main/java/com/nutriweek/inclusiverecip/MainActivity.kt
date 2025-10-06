@@ -5,23 +5,111 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Surface
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.nutriweek.inclusiverecip.core.theme.AccessRecetasTheme
+import com.nutriweek.inclusiverecip.core.theme.Surface
+import com.nutriweek.inclusiverecip.data.DbProvider
 
 // (Opcional) si usas el seed rápido:
 import com.nutriweek.inclusiverecip.data.InMemoryStore
 import com.nutriweek.inclusiverecip.data.model.*
+import com.nutriweek.inclusiverecip.domain.AuthManager
+import com.nutriweek.inclusiverecip.session.SessionPrefs
 import com.nutriweek.inclusiverecip.ui.AppNav
+import com.nutriweek.inclusiverecip.ui.Routes
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            // 1) Init DB + prefs (una sola vez)
+            DbProvider.init(applicationContext)
+            SessionPrefs.init(applicationContext)
             val scrollState = rememberScrollState()
-            App(scrollState = scrollState)
+
+            // 2) Restaura sesión persistida a memoria (si existe)
+            if (InMemoryStore.activeUserId == null) {
+                InMemoryStore.activeUserId = SessionPrefs.getActiveUserId()
+            }
+
+
+            val navController = rememberNavController()
+            val backStackEntry by navController.currentBackStackEntryAsState()
+
+            // 3) Redirección de arranque (solo 1 vez)
+            var didRoute by remember { mutableStateOf(false) }
+            LaunchedEffect(Unit) {
+                if (!didRoute) {
+                    val activeId = InMemoryStore.activeUserId
+                    val dao = DbProvider.db.userDao()
+                    when {
+                        // Sesión activa → ir a Plan
+                        !activeId.isNullOrBlank() && dao.findById(activeId) != null -> {
+                            navController.navigate(Routes.Plan) {
+                                popUpTo(Routes.Login) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                        // Sin sesión: si no hay usuarios → Register, si hay → Login
+                        dao.count() == 0 -> {
+                            navController.navigate(Routes.Register) {
+                                popUpTo(Routes.Login) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                        else -> {
+                            // Dejar en Login (startDestination)
+                        }
+                    }
+                    didRoute = true
+                }
+            }
+
+            // 4) TopBar común
+            val activeIdNow = InMemoryStore.activeUserId
+            val displayName = remember(activeIdNow, backStackEntry) {
+                activeIdNow?.let { DbProvider.db.userDao().findById(it)?.displayName }
+            }
+            AccessRecetasTheme {
+                Scaffold(
+                    topBar = {
+                        AppTopBar(
+                            isLoggedIn = activeIdNow != null,
+                            displayName = displayName,
+                            onLogout = {
+                                AuthManager.logout()
+                                navController.navigate(Routes.Login) {
+                                    popUpTo(Routes.Login) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
+                        )
+                    }
+                ) { innerPadding ->
+                    AppNav(
+                        nav = navController,
+                        modifier = Modifier.padding(innerPadding)
+                    )
+
+                }
+                App(scrollState = scrollState)
+            }
         }
     }
 }
@@ -110,31 +198,36 @@ fun App(scrollState: ScrollState) {
                     )
                 )
             }
-            if (InMemoryStore.users.size < 5) {
-                val demos = listOf(
-                    Triple("demo1@ejemplo.com", "123456", "Usuario Demo 1"),
-                    Triple("demo2@ejemplo.com", "123456", "Usuario Demo 2"),
-                    Triple("demo3@ejemplo.com", "123456", "Usuario Demo 3"),
-                    Triple("demo4@ejemplo.com", "123456", "Usuario Demo 4"),
-                    Triple("demo5@ejemplo.com", "123456", "Usuario Demo 5"),
-                )
-                demos.forEach { (email, pass, name) ->
-                    val exists = InMemoryStore.users.values.any { it.email.equals(email, ignoreCase = true) }
-                    if (!exists) {
-                        // Usa FQN para evitar imports extra
-                        com.nutriweek.inclusiverecip.domain.AuthManager.register(
-                            email = email,
-                            password = pass,
-                            displayName = name
-                        )
-                    }
-                }
-                // Asegura que no quede logueado el último registrado por el seed
-                com.nutriweek.inclusiverecip.domain.AuthManager.logout()
-            }
+
         }
 
-        Surface { AppNav() }
+        //Surface { AppNav() }
     }
 }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun AppTopBar(
+        isLoggedIn: Boolean,
+        displayName: String?,
+        onLogout: () -> Unit
+    ) {
+        TopAppBar(
+            title = {
+                if (isLoggedIn && !displayName.isNullOrBlank()) {
+                    Text("Hola, $displayName")
+                } else {
+                    Text("Bienvenido")
+                }
+            },
+            actions = {
+                if (isLoggedIn) {
+                    TextButton(onClick = onLogout) {
+                        Text("Logout")
+                    }
+                }
+            }
+        )
+    }
+
 

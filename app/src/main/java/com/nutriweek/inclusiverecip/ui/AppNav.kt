@@ -1,10 +1,10 @@
 package com.nutriweek.inclusiverecip.ui
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavHostController
 import com.nutriweek.inclusiverecip.ui.screens.auth.LoginScreen
 import com.nutriweek.inclusiverecip.ui.screens.auth.RegisterScreen
 import com.nutriweek.inclusiverecip.ui.screens.auth.RecoverScreen
@@ -13,9 +13,15 @@ import com.nutriweek.inclusiverecip.ui.screens.recipes.RecipeDetailScreen
 import com.nutriweek.inclusiverecip.ui.screens.recipes.RecipeListScreen
 
 @Composable
-fun AppNav(nav: NavHostController = rememberNavController()) {
-    NavHost(navController = nav, startDestination = Routes.Login) {
-
+fun AppNav(
+    nav: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    NavHost(
+        navController = nav,
+        startDestination = Routes.Login,
+        modifier = modifier
+    ) {
         // ---- AUTH ----
         composable(Routes.Login) {
             LoginScreen(
@@ -64,5 +70,3 @@ fun AppNav(nav: NavHostController = rememberNavController()) {
         }
     }
 }
-
-

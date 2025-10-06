@@ -12,6 +12,9 @@ foundation = "1.9.0"
 navigationRuntimeKtx = "2.9.3"
 navigationCompose = "2.9.3"
 foundationVersion = "1.9.0"
+room = "2.8.1"
+ksp = "2.2.10-2.0.2"
+material3 = "1.4.0"
 
 [libraries]
 # Core / Activity / Lifecycle
@@ -50,8 +53,15 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
 
+androidx-room-runtime   = { module = "androidx.room:room-runtime",  version.ref = "room" }
+androidx-room-ktx       = { module = "androidx.room:room-ktx",      version.ref = "room" }
+androidx-room-compiler  = { module = "androidx.room:room-compiler", version.ref = "room" }
+material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+
+
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+ksp = { id = "com.google.devtools.ksp",       version.ref = "ksp" }

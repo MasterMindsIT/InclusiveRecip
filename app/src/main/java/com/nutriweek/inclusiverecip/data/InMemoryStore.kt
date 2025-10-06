@@ -10,8 +10,6 @@ import java.util.concurrent.ConcurrentHashMap
  * de esa forma persisten los datos y no se crea una nueva instancia.
  */
 object InMemoryStore {
-    // Simples mapas en memoria
-    val users: MutableMap<String, User> = ConcurrentHashMap()
     val recipes: MutableMap<String, Recipe> = ConcurrentHashMap()
     val plans: MutableMap<String, MealPlan> = ConcurrentHashMap()
 
